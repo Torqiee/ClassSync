@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\BacktrackingController;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Activity;
 
@@ -109,6 +110,10 @@ Route::middleware('auth')->group(function () {
     // Route untuk Settings
     Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
     Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
+
+    // Route untuk Backtracking Visualization
+    Route::get('/backtracking', [BacktrackingController::class, 'index'])->name('backtracking.index');
+    Route::get('/api/backtracking/visualize', [BacktrackingController::class, 'visualize'])->name('backtracking.visualize');
 });
 
 Route::get('/activities/reset', function () {
