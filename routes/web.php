@@ -13,7 +13,7 @@ Route::middleware('auth')->group(function () {
         $userId = Auth::id();
 
         // 1. Ambil semua aktivitas user (HANYA YANG AKTIF)
-        // Filter inilah yang membuat tugas 'selesai' menghilang dari Dashboard
+        // Filter ini yang membuat tugas 'selesai' menghilang dari Dashboard
         $allActivities = \App\Models\Activity::where('user_id', $userId)
             ->where(function($query) {
                 $query->where('status', 'aktif')
