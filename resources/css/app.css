@@ -1,3 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+html { color-scheme: light dark; }
+
+/* Smooth theme transition */
+* { transition-property: background-color, border-color, color; }
+

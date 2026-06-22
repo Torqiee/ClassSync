@@ -10,13 +10,16 @@ class SettingController extends Controller
 {
     public function index()
     {
-        // Cari pengaturan user, jika belum ada, buatkan defaultnya
         $setting = Setting::firstOrCreate(
             ['user_id' => Auth::id()],
             [
                 'istirahat_1_jam' => true,
                 'maks_3_kegiatan' => false,
                 'waktu_produktif' => true,
+                'no_overlap_kuliah' => true,
+                'no_overlap_all' => true,
+                'strict_deadline' => true,
+                'prioritas_kuliah' => true,
             ]
         );
 
@@ -27,11 +30,14 @@ class SettingController extends Controller
     {
         $setting = Setting::where('user_id', Auth::id())->first();
 
-        // Checkbox di HTML hanya mengirim data jika dicentang (aktif)
         $setting->update([
             'istirahat_1_jam' => $request->has('istirahat_1_jam'),
             'maks_3_kegiatan' => $request->has('maks_3_kegiatan'),
             'waktu_produktif' => $request->has('waktu_produktif'),
+            'no_overlap_kuliah' => $request->has('no_overlap_kuliah'),
+            'no_overlap_all' => $request->has('no_overlap_all'),
+            'strict_deadline' => $request->has('strict_deadline'),
+            'prioritas_kuliah' => $request->has('prioritas_kuliah'),
         ]);
 
         return back()->with('success', 'Preferensi AI berhasil diperbarui!');
@@ -41,12 +47,14 @@ class SettingController extends Controller
     {
         $setting = Setting::where('user_id', Auth::id())->first();
 
-        // API Flutter mengirim data dalam bentuk JSON, 
-        // jadi kita ambil nilainya langsung (bukan lewat $request->has())
         $setting->update([
             'istirahat_1_jam' => $request->istirahat_1_jam ?? false,
             'maks_3_kegiatan' => $request->maks_3_kegiatan ?? false,
             'waktu_produktif' => $request->waktu_produktif ?? false,
+            'no_overlap_kuliah' => $request->no_overlap_kuliah ?? false,
+            'no_overlap_all' => $request->no_overlap_all ?? false,
+            'strict_deadline' => $request->strict_deadline ?? false,
+            'prioritas_kuliah' => $request->prioritas_kuliah ?? false,
         ]);
 
         return response()->json([
@@ -57,19 +65,19 @@ class SettingController extends Controller
 
     public function getApi()
     {
-        // Cari pengaturan user, jika belum ada, buatkan defaultnya
         $setting = Setting::firstOrCreate(
             ['user_id' => Auth::id()],
             [
                 'istirahat_1_jam' => true,
                 'maks_3_kegiatan' => false,
                 'waktu_produktif' => true,
+                'no_overlap_kuliah' => true,
+                'no_overlap_all' => true,
+                'strict_deadline' => true,
+                'prioritas_kuliah' => true,
             ]
         );
 
-        return response()->json([
-            'success' => true,
-            'data' => $setting
-        ], 200);
+        return response()->json(['success' => true, 'data' => $setting], 200);
     }
 }
