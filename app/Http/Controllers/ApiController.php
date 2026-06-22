@@ -286,7 +286,7 @@ class ApiController extends Controller
     public function generateJadwal(Request $request, AiSchedulerService $aiService)
     {
         try {
-            // Langsung panggil otak AI yang sama persis kayak versi Web!
+            // Langsung panggil otak AI yang sama persis kayak versi Web
             $result = $aiService->generateSchedule();
 
             // Biasanya dari web balikan statusnya 'success', 'info', atau 'error'

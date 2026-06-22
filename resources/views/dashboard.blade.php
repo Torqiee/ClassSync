@@ -74,6 +74,40 @@
             </div>
         </div>
 
+        {{-- Tugas Belum Terjadwal (gagal/menunggu di-generate) --}}
+        @if($unscheduledTasks->count() > 0)
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-5 shadow-sm">
+            <div class="flex items-start gap-3 mb-4">
+                <div class="w-9 h-9 rounded-lg bg-amber-100 flex items-center justify-center shrink-0">
+                    <i class="fa-solid fa-triangle-exclamation text-amber-600"></i>
+                </div>
+                <div>
+                    <h2 class="text-sm font-semibold text-amber-900">{{ $unscheduledTasks->count() }} Tugas Belum Terjadwal</h2>
+                    <p class="text-xs text-amber-700/80 mt-0.5">Tugas ini bentrok atau belum berhasil ditempatkan AI di kalender. Edit detailnya (durasi/deadline) atau hapus jika sudah tidak relevan, lalu klik "Generate Jadwal" lagi.</p>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                @foreach($unscheduledTasks as $tugas)
+                <div class="group relative bg-white border border-amber-200 rounded-xl p-3.5 shadow-sm">
+                    <div class="absolute top-2 right-2 flex gap-1 z-10">
+                        <a href="{{ route('activities.edit', $tugas->id) }}" class="w-6 h-6 bg-white border border-amber-100 rounded-md flex items-center justify-center hover:bg-amber-50 transition-colors shadow-sm">
+                            <i class="fa-solid fa-pen-to-square text-[10px] text-amber-600"></i>
+                        </a>
+                        <button type="button" @click.prevent="showDeleteModal = true; deleteUrl = '{{ route('activities.destroy', $tugas->id) }}'" class="w-6 h-6 bg-white border border-gray-200 rounded-md flex items-center justify-center hover:bg-red-50 transition-colors shadow-sm">
+                            <i class="fa-solid fa-trash text-[10px] text-red-500"></i>
+                        </button>
+                    </div>
+                    <div class="text-xs text-gray-900 font-semibold pr-12 leading-snug break-words">{{ $tugas->nama_kegiatan }}</div>
+                    <div class="flex items-center gap-1.5 mt-2">
+                        <i class="fa-regular fa-flag text-[9px] text-amber-500 shrink-0"></i>
+                        <span class="text-[10px] font-bold text-amber-600 uppercase tracking-wider truncate">Deadline: {{ $tugas->deadline }} · {{ $tugas->durasi }} jam</span>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
+
         {{-- Weekly Calendar (Tabel Scrollable) --}}
         <div class="bg-white border border-gray-200 rounded-xl overflow-hidden flex flex-col shadow-sm">
             <div class="px-5 py-4 border-b border-gray-100 flex justify-between items-center shrink-0">

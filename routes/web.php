@@ -58,7 +58,8 @@ Route::middleware('auth')->group(function () {
         }
 
         // D. Efisiensi AI & Status Visual
-        $unscheduledCount = $allActivities->where('tipe', 'fleksibel')->where('is_scheduled', false)->count();
+        $unscheduledTasks = $allActivities->where('tipe', 'fleksibel')->where('is_scheduled', false)->sortBy('deadline')->values();
+        $unscheduledCount = $unscheduledTasks->count();
         
         if ($bentrokCount > 0) {
             $efisiensiAI = "Bentrok!";
@@ -89,11 +90,13 @@ Route::middleware('auth')->group(function () {
             'statusBentrok', 
             'warnaBentrok', 
             'efisiensiAI', 
-            'warnaAI'
+            'warnaAI',
+            'unscheduledTasks'
         ));
     })->name('dashboard');
 
     Route::post('/activities/generate-ai', [ActivityController::class, 'generateAI'])->name('activities.generate');
+    Route::get('/activities/visualize', [ActivityController::class, 'visualize'])->name('activities.visualize');
     Route::get('/activities/create', [ActivityController::class, 'create'])->name('activities.create');
     Route::post('/activities', [ActivityController::class, 'store'])->name('activities.store');
 
@@ -126,6 +129,10 @@ Route::get('/activities/reset', function () {
             'jam_mulai' => null,
             'jam_selesai' => null
         ]);
+
+    // Reset juga jejak visualisasi AI yang lama
+    session()->forget(['ai_trace', 'ai_trace_status', 'ai_trace_message']);
+
     return redirect()->route('dashboard')->with('info', 'Jadwal AI berhasil di-reset. Siap generate ulang!');
 })->name('activities.reset');
 

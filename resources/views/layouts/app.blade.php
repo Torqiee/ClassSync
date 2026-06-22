@@ -10,6 +10,7 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+    <link href="https://fonts.bunny.net/css?family=jetbrains-mono:400,500,600,700&display=swap" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -85,6 +86,11 @@
                 <a href="{{ route('activities.history') }}" class="{{ request()->routeIs('activities.history') ? 'bg-indigo-50/80 text-indigo-700 ring-1 ring-inset ring-indigo-100/50' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900' }} flex items-center px-3.5 py-2.5 text-sm font-medium rounded-xl transition-all group mt-1">
                     <i class="fa-solid fa-clock-rotate-left w-5 text-center mr-3 {{ request()->routeIs('activities.history') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-gray-600' }} transition-colors"></i>
                     Riwayat Kegiatan
+                </a>
+
+                <a href="{{ route('activities.visualize') }}" class="{{ request()->routeIs('activities.visualize') ? 'bg-indigo-50/80 text-indigo-700 ring-1 ring-inset ring-indigo-100/50' : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900' }} flex items-center px-3.5 py-2.5 text-sm font-medium rounded-xl transition-all group mt-1">
+                    <i class="fa-solid fa-diagram-project w-5 text-center mr-3 {{ request()->routeIs('activities.visualize') ? 'text-indigo-600' : 'text-gray-400 group-hover:text-gray-600' }} transition-colors"></i>
+                    Visualisasi AI
                 </a>
             </div>
 

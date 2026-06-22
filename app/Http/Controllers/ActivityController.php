@@ -158,7 +158,39 @@ class ActivityController extends Controller
     {
         $result = $aiService->generateSchedule();
 
-        return redirect()->route('dashboard')->with($result['status'], $result['message']);
+        // Jika tidak ada trace berarti tidak ada proses untuk divisualisasikan
+        // (misal: tidak ada tugas fleksibel sama sekali), cukup balik ke dashboard.
+        if (empty($result['trace']) || count($result['trace']) <= 1) {
+            // Bersihkan juga jejak visualisasi lama agar tidak nyangkut/basi
+            session()->forget(['ai_trace', 'ai_trace_status', 'ai_trace_message']);
+            return redirect()->route('dashboard')->with($result['status'], $result['message']);
+        }
+
+        // Simpan trace di session agar bisa dibaca halaman visualisasi
+        session([
+            'ai_trace'         => $result['trace'],
+            'ai_trace_status'  => $result['status'],
+            'ai_trace_message' => $result['message'],
+        ]);
+
+        return redirect()->route('activities.visualize');
+    }
+
+    // Menampilkan halaman visualisasi proses backtracking AI
+    public function visualize()
+    {
+        $trace = session('ai_trace');
+
+        if (empty($trace)) {
+            return redirect()->route('dashboard')
+                ->with('info', 'Belum ada data proses untuk divisualisasikan. Silakan klik "Generate Jadwal" terlebih dahulu.');
+        }
+
+        return view('activities.visualize', [
+            'trace'   => $trace,
+            'status'  => session('ai_trace_status', 'info'),
+            'message' => session('ai_trace_message', ''),
+        ]);
     }
 
     // ==========================================
@@ -190,6 +222,11 @@ class ActivityController extends Controller
                     'diselesaikan_pada' => now()
                 ]);
 
-        return back()->with('success', 'Kalender di-refresh! Semua tugas fleksibel minggu ini telah dipindahkan ke Riwayat.');
+        // Reset visualisasi AI: hapus jejak (trace) proses backtracking minggu
+        // sebelumnya dari session, supaya halaman Visualisasi AI tidak lagi
+        // menampilkan proses lama yang sudah tidak relevan.
+        session()->forget(['ai_trace', 'ai_trace_status', 'ai_trace_message']);
+
+        return back()->with('success', 'Kalender di-refresh! Semua tugas fleksibel minggu ini telah dipindahkan ke Riwayat, dan visualisasi AI telah direset.');
     }
 }
