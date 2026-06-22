@@ -13,7 +13,9 @@ class ActivityController extends Controller
     public function generateAI()
     {
         // Panggil API Python yang jalan di port 8001
-        $response = Http::timeout(120)->post('http://127.0.0.1:8001/api/ai/generate', [
+        $aiUrl = env('AI_ENGINE_URL', 'http://127.0.0.1:8001/api/ai/generate');
+
+        $response = Http::timeout(120)->post($aiUrl, [
             'user_id' => Auth::id()
         ]);
 
