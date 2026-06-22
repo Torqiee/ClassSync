@@ -6,9 +6,38 @@ use App\Models\Activity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Services\AiSchedulerService;
+use Illuminate\Support\Facades\Http;
 
 class ActivityController extends Controller
 {
+    public function generateAI()
+    {
+        // Panggil API Python yang jalan di port 8001
+        $response = Http::timeout(120)->post('http://127.0.0.1:8001/api/ai/generate', [
+            'user_id' => Auth::id()
+        ]);
+
+        if ($response->successful()) {
+            $result = $response->json();
+
+            if (empty($result['trace']) || count($result['trace']) <= 1) {
+                session()->forget(['ai_trace', 'ai_trace_status', 'ai_trace_message']);
+                return redirect()->route('dashboard')->with($result['status'], $result['message']);
+            }
+
+            // Simpan log dari Python ke session Laravel untuk divisualisasikan
+            session([
+                'ai_trace'         => $result['trace'],
+                'ai_trace_status'  => $result['status'],
+                'ai_trace_message' => $result['message'],
+            ]);
+
+            return redirect()->route('activities.visualize');
+        }
+
+        return redirect()->route('dashboard')->with('error', 'Gagal menghubungi AI Engine (Python).');
+    }
+
     // Menampilkan halaman form
     public function create()
     {
@@ -80,7 +109,6 @@ class ActivityController extends Controller
     {
         $activity = Activity::findOrFail($id);
         
-        // Pastikan hanya pemilik jadwal yang bisa mengedit
         if ($activity->user_id !== Auth::id()) {
             abort(403, 'Unauthorized action.');
         }
@@ -152,28 +180,6 @@ class ActivityController extends Controller
         $activity->delete();
 
         return redirect()->route('dashboard')->with('success', 'Aktivitas berhasil dihapus!');
-    }
-
-    public function generateAI(AiSchedulerService $aiService)
-    {
-        $result = $aiService->generateSchedule();
-
-        // Jika tidak ada trace berarti tidak ada proses untuk divisualisasikan
-        // (misal: tidak ada tugas fleksibel sama sekali), cukup balik ke dashboard.
-        if (empty($result['trace']) || count($result['trace']) <= 1) {
-            // Bersihkan juga jejak visualisasi lama agar tidak nyangkut/basi
-            session()->forget(['ai_trace', 'ai_trace_status', 'ai_trace_message']);
-            return redirect()->route('dashboard')->with($result['status'], $result['message']);
-        }
-
-        // Simpan trace di session agar bisa dibaca halaman visualisasi
-        session([
-            'ai_trace'         => $result['trace'],
-            'ai_trace_status'  => $result['status'],
-            'ai_trace_message' => $result['message'],
-        ]);
-
-        return redirect()->route('activities.visualize');
     }
 
     // Menampilkan halaman visualisasi proses backtracking AI

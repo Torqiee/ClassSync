@@ -69,7 +69,7 @@
             </div>
 
             <div x-ref="scroller" class="px-4 sm:px-6 py-6 max-h-[60vh] overflow-y-auto scroll-smooth">
-                <template x-for="(step, i) in visible" :key="i">
+                <template x-for="(step, i) in visible.filter((s, idx, arr) => idx === 0 || JSON.stringify(s) !== JSON.stringify(arr[idx-1]))" :key="i">
                     <div>
                         {{-- connector arrow before major nodes --}}
                         <div x-show="isMajor(step.type) && i > 0 && isMajor(visible[i-1] ? visible[i-1].type : null)" class="flex justify-center py-1">

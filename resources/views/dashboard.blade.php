@@ -10,7 +10,7 @@
                 <p class="mt-1 text-sm text-gray-400">Kelola jadwal produktifmu</p>
             </div>
             <div class="flex flex-wrap gap-2">
-                <form action="{{ route('activities.generate') }}" method="POST">
+                <form action="/activities/generate-ai" method="POST">
                     @csrf
                     <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-all shadow-sm shadow-purple-200 flex items-center gap-2 active:scale-[0.98]">
                         <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
