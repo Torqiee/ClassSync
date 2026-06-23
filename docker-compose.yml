@@ -1,0 +1,14 @@
+services:
+  app:
+    build: .
+    container_name: classsync_app
+    ports:
+      - "80:8000"
+    volumes:
+      - .:/var/www
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
